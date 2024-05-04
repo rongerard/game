@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sort-a-Element!</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div id="categories-container">
+            <div class="category">
+                <div class="category-label">Metals</div>
+                <div class="category-box droppable" id="droppable-metal"></div>
+            </div>
+            <div class="category">
+                <div class="category-label">Non-Metals</div>
+                <div class="category-box droppable" id="droppable-nmetal"></div>
+            </div>
+            <div class="category">
+                <div class="category-label">Noble Gases</div>
+                <div class="category-box droppable" id="droppable-gas"></div>
+            </div>
+            <div class="category">
+                <div class="category-label">Metalloids</div>
+                <div class="category-box droppable" id="droppable-metalloids"></div>
+            </div>
+        </div>
+        <div id="elements-container">
+            <!-- Elements will be dynamically added here -->
+        </div>
+        <button id="next-level-btn">Next Level</button>
+    </div>
+
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
+    <script>
+
+    var levels = [
+        [
+            { element: "Au", category: "metal" },
+            { element: "H", category: "nmetal" }
+        ],
+        [   { element: "He", category: "gas" },
+            { element: "K", category: "metal" }
+        ],    
+        [
+            { element: "B", category: "metalloids" },
+            { element: "Xe", category: "gas" },
+            { element: "Si", category: "metalloids" }
+        ],
+        [
+            { element: "Ge", category: "metalloids" },
+            { element: "Rn", category: "gas" },
+            { element: "Ar", category: "nmetal" },
+            
+        ],
+        [
+            { element: "As", category: "metalloids" },
+            { element: "Rb", category: "metal" },
+            { element: "N", category: "nmetal" },
+            { element: "Kr", category: "gas" }
+        ]
+        // Add more levels as needed
+    ];
+
+    var currentLevel = 0;
+
+    $(function() {
+        loadLevel(levels[currentLevel]);
+
+        $(".element").draggable({
+            revert: "invalid",
+            start: function(event, ui) {
+                $(".ui-droppable").removeClass("ui-state-hover");
+            }
+        });
+
+        $(".droppable").droppable({
+            drop: function(event, ui) {
+                var category = $(this).attr("id").replace("droppable-", "");
+                var elementCategory = ui.draggable.data("category");
+                if (category === elementCategory) {
+                    $(ui.draggable).addClass("droppable-highlight");
+                } else {
+                    $(this).addClass("droppable-wrong");
+                }
+            },
+            out: function(event, ui) {
+                $(this).removeClass("droppable-wrong");
+            }
+        });
+
+        $("#next-level-btn").click(function() {
+            if (currentLevel < levels.length - 1) {
+                currentLevel++;
+                $("#elements-container").empty(); // Reset elements
+                loadLevel(levels[currentLevel]);
+            } else {
+                alert("Congratulations! You have completed all levels.");
+            }
+        });
+
+        
+    });
+
+    function loadLevel(elements) {
+        elements.forEach(function(item) {
+            var elementDiv = $('<div class="element draggable">' + item.element + '</div>');
+            elementDiv.attr('data-category', item.category); // Add data-category attribute
+            $("#elements-container").append(elementDiv);
+        });
+        // Make newly added elements draggable
+        $(".draggable").draggable({
+            revert: "invalid",
+            start: function(event, ui) {
+                $(".ui-droppable").removeClass("ui-state-hover");
+            }
+        });
+    }
+
+    
+    
+    </script>
+    
+    </body>
+</html>
